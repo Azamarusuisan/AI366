@@ -24,18 +24,18 @@ function getEnvNumber(key: string, defaultValue: number): number {
 
 export const appConfig: AppConfig = {
   instagram: {
-    appId: getEnvVar('INSTAGRAM_APP_ID'),
-    appSecret: getEnvVar('INSTAGRAM_APP_SECRET'),
-    accessToken: getEnvVar('INSTAGRAM_ACCESS_TOKEN'),
-    businessAccountId: getEnvVar('INSTAGRAM_BUSINESS_ACCOUNT_ID'),
-    webhookVerifyToken: getEnvVar('INSTAGRAM_WEBHOOK_VERIFY_TOKEN'),
+    appId: getEnvVar('INSTAGRAM_APP_ID', 'demo_instagram_app_id'),
+    appSecret: getEnvVar('INSTAGRAM_APP_SECRET', 'demo_instagram_app_secret'),
+    accessToken: getEnvVar('INSTAGRAM_ACCESS_TOKEN', 'demo_access_token_1234567890'),
+    businessAccountId: getEnvVar('INSTAGRAM_BUSINESS_ACCOUNT_ID', '17841401234567890'),
+    webhookVerifyToken: getEnvVar('INSTAGRAM_WEBHOOK_VERIFY_TOKEN', 'demo_webhook_verify_token'),
   },
   gbp: {
-    clientId: getEnvVar('GBP_CLIENT_ID'),
-    clientSecret: getEnvVar('GBP_CLIENT_SECRET'),
-    refreshToken: getEnvVar('GBP_REFRESH_TOKEN'),
-    accountId: getEnvVar('GBP_ACCOUNT_ID'),
-    locationId: getEnvVar('GBP_LOCATION_ID'),
+    clientId: getEnvVar('GBP_CLIENT_ID', 'demo-client-id.apps.googleusercontent.com'),
+    clientSecret: getEnvVar('GBP_CLIENT_SECRET', 'demo_client_secret_1234567890'),
+    refreshToken: getEnvVar('GBP_REFRESH_TOKEN', 'demo_refresh_token_1234567890'),
+    accountId: getEnvVar('GBP_ACCOUNT_ID', 'accounts/demo123456789'),
+    locationId: getEnvVar('GBP_LOCATION_ID', 'locations/demo123456789'),
   },
   server: {
     port: getEnvNumber('PORT', 3000),
