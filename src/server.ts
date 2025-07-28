@@ -420,3 +420,8 @@ export default app;
 if (require.main === module && !process.env.VERCEL) {
   startServer();
 }
+
+// For Render: Start server automatically
+if (process.env.RENDER) {
+  startServer();
+}
