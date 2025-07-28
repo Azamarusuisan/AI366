@@ -11,11 +11,36 @@ async function ensureLogsDirectory(): Promise<void> {
   try {
     await fs.access(logsDir);
   } catch {
-    await fs.mkdir(logsDir, { recursive: true });
+    try {
+      await fs.mkdir(logsDir, { recursive: true });
+    } catch (error) {
+      console.warn('Failed to create logs directory:', error);
+      // Use console only if directory creation fails
+    }
   }
 }
 
 // Winston logger configuration
+const transports: winston.transport[] = [
+  new winston.transports.Console({
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.simple()
+    ),
+  })
+];
+
+// Add file transport only if not in cloud environment
+if (!process.env.RENDER && !process.env.VERCEL) {
+  transports.push(
+    new winston.transports.File({
+      filename: appConfig.logging.filePath || './logs/meo-sync.log',
+      maxsize: parseSize(appConfig.logging.maxSize || '10m'),
+      maxFiles: appConfig.logging.maxFiles || 7,
+    })
+  );
+}
+
 const logger = winston.createLogger({
   level: appConfig.logging.level,
   format: winston.format.combine(
@@ -24,19 +49,7 @@ const logger = winston.createLogger({
     winston.format.json()
   ),
   defaultMeta: { service: 'meo-sync' },
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      ),
-    }),
-    new winston.transports.File({
-      filename: appConfig.logging.filePath || './logs/meo-sync.log',
-      maxsize: parseSize(appConfig.logging.maxSize || '10m'),
-      maxFiles: appConfig.logging.maxFiles || 7,
-    }),
-  ],
+  transports,
 });
 
 // Parse size string to bytes
