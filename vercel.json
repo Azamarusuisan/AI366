@@ -1,19 +1,14 @@
 {
   "version": 2,
-  "builds": [
+  "buildCommand": "npm run build",
+  "rewrites": [
     {
-      "src": "src/server.ts",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/src/server.ts"
+      "source": "/(.*)",
+      "destination": "/api"
     }
   ],
   "functions": {
-    "src/server.ts": {
+    "api/index.js": {
       "maxDuration": 30
     }
   }

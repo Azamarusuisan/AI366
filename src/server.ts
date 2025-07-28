@@ -413,7 +413,10 @@ async function startServer(): Promise<void> {
 // Export for CLI usage
 export { app, startServer, processSinglePost };
 
-// Start server if called directly
-if (require.main === module) {
+// Export default for Vercel
+export default app;
+
+// Start server if called directly (not in Vercel)
+if (require.main === module && !process.env.VERCEL) {
   startServer();
 }
