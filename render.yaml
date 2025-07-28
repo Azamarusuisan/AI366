@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: meo-sync
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        fromGroup: meo-sync-env
+      - key: INSTAGRAM_APP_ID
+        fromGroup: meo-sync-env
+      - key: INSTAGRAM_APP_SECRET
+        fromGroup: meo-sync-env
+      - key: INSTAGRAM_ACCESS_TOKEN
+        fromGroup: meo-sync-env
+      - key: INSTAGRAM_BUSINESS_ACCOUNT_ID
+        fromGroup: meo-sync-env
+      - key: GBP_CLIENT_ID
+        fromGroup: meo-sync-env
+      - key: GBP_CLIENT_SECRET
+        fromGroup: meo-sync-env
+      - key: GBP_REFRESH_TOKEN
+        fromGroup: meo-sync-env
+      - key: GBP_ACCOUNT_ID
+        fromGroup: meo-sync-env
+      - key: GBP_LOCATION_ID
+        fromGroup: meo-sync-env

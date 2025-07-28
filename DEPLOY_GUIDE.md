@@ -1,5 +1,52 @@
 # MEO-Sync デプロイガイド
 
+## Renderでのデプロイ手順（推奨）
+
+### 1. 事前準備
+- Renderアカウントを作成（https://render.com/signup）
+- GitHubリポジトリの準備完了
+
+### 2. Renderでプロジェクトをデプロイ
+#### 方法A: render.yamlを使った自動デプロイ（推奨）
+1. https://dashboard.render.com/blueprints にアクセス
+2. 「New Blueprint Instance」をクリック
+3. GitHubリポジトリ（AI366）を接続
+4. 「Connect」をクリック
+
+#### 方法B: 手動でWebサービスを作成
+1. https://dashboard.render.com にアクセス
+2. 「New」→「Web Service」をクリック
+3. GitHubリポジトリを選択
+4. 以下の設定を入力：
+   - Name: `meo-sync`
+   - Runtime: `Node`
+   - Build Command: `npm install && npm run build`
+   - Start Command: `npm start`
+
+### 3. 環境変数グループの作成
+1. Renderダッシュボードで「Env Groups」をクリック
+2. 「New Environment Group」をクリック
+3. Name: `meo-sync-env`
+4. 以下の環境変数を追加：
+
+```
+INSTAGRAM_APP_ID=your_instagram_app_id
+INSTAGRAM_APP_SECRET=your_instagram_app_secret
+INSTAGRAM_ACCESS_TOKEN=your_long_lived_access_token
+INSTAGRAM_BUSINESS_ACCOUNT_ID=your_business_account_id
+GBP_CLIENT_ID=your_gbp_client_id
+GBP_CLIENT_SECRET=your_gbp_client_secret
+GBP_REFRESH_TOKEN=your_gbp_refresh_token
+GBP_ACCOUNT_ID=your_gbp_account_id
+GBP_LOCATION_ID=your_gbp_location_id
+PORT=3000
+```
+
+### 4. デプロイ完了
+- デプロイ完了後、以下のようなURLが生成されます：
+  `https://meo-sync.onrender.com`
+- このURLをクライアントに共有してください
+
 ## Vercelでのデプロイ手順
 
 ### 1. 事前準備
