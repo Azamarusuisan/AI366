@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEO Sync Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-50: #EFF6FF;
+            --primary-100: #DBEAFE;
+            --primary-500: #0F62FE;
+            --primary-600: #0D52D1;
+            --primary-700: #0A42A4;
+            
+            --neutral-50: #F8FAFC;
+            --neutral-100: #F1F5F9;
+            --neutral-200: #E2E8F0;
+            --neutral-300: #CBD5E1;
+            --neutral-400: #94A3B8;
+            --neutral-500: #64748B;
+            --neutral-600: #475569;
+            --neutral-700: #334155;
+            --neutral-800: #1E293B;
+            --neutral-900: #0F172A;
+            
+            --success: #22C55E;
+            --warning: #F97316;
+            --error: #EF4444;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--neutral-50);
+            color: var(--neutral-800);
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 1rem 0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+            letter-spacing: -0.025em;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--neutral-200);
+            background: white;
+            color: var(--neutral-600);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-button:hover {
+            background: var(--neutral-50);
+            border-color: var(--neutral-300);
+        }
+
+        .nav-button.primary {
+            background: var(--primary-500);
+            color: white;
+            border-color: var(--primary-500);
+        }
+
+        .nav-button.primary:hover {
+            background: var(--primary-600);
+            border-color: var(--primary-600);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--neutral-600);
+            font-size: 1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--neutral-300);
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--neutral-600);
+            letter-spacing: 0.025em;
+        }
+
+        .stat-number {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--error);
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--neutral-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        /* Buttons */
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .button-primary {
+            background: var(--primary-500);
+            color: white;
+        }
+
+        .button-primary:hover {
+            background: var(--primary-600);
+        }
+
+        .button-secondary {
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+            border: 1px solid var(--neutral-200);
+        }
+
+        .button-secondary:hover {
+            background: var(--neutral-200);
+        }
+
+        .button-ghost {
+            background: transparent;
+            color: var(--neutral-600);
+        }
+
+        .button-ghost:hover {
+            background: var(--neutral-100);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Table */
+        .table-container {
+            border-radius: 8px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .logs-table th {
+            background: var(--neutral-50);
+            padding: 12px 16px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--neutral-700);
+            text-align: left;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .logs-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--neutral-200);
+            font-size: 0.875rem;
+            color: var(--neutral-700);
+        }
+
+        .logs-table tr:hover {
+            background: var(--neutral-50);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.025em;
+        }
+
+        .status-success {
+            background: #DCFCE7;
+            color: #15803D;
+        }
+
+        .status-failed {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .status-skipped {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
+        /* Utilities */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--neutral-500);
+            font-size: 0.875rem;
+        }
+
+        .error {
+            background: #FEE2E2;
+            color: #DC2626;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+        }
+
+        .success {
+            background: #DCFCE7;
+            color: #15803D;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+        }
+
+        .caption-text {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .timestamp {
+            font-family: 'JetBrains Mono', Monaco, 'Courier New', monospace;
+            font-size: 0.8125rem;
+            color: var(--neutral-500);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 1.5rem;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--neutral-200);
+            background: white;
+            color: var(--neutral-700);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination button:hover {
+            border-color: var(--neutral-300);
+            background: var(--neutral-50);
+        }
+
+        .pagination button.active {
+            background: var(--primary-500);
+            color: white;
+            border-color: var(--primary-500);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .header-content {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .nav-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .logs-table {
+                font-size: 0.8125rem;
+            }
+            
+            .logs-table th,
+            .logs-table td {
+                padding: 12px 8px;
+            }
+
+            .card-header {
+                padding: 1rem;
+            }
+
+            .card-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">M</div>
+                <h1>MEO Sync</h1>
+            </div>
+            <div class="nav-actions">
+                <a href="/setup" class="nav-button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
+                    </svg>
+                    セットアップ
+                </a>
+                <button class="nav-button primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                    </svg>
+                    手動投稿
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">ダッシュボード</h1>
+            <p class="page-subtitle">Instagram と Google ビジネスプロフィールの同期状況を確認できます</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-label">総同期数</div>
+                <div class="stat-number" id="totalSyncs">-</div>
+                <div class="stat-change positive">
+                    ↗ +12% 前週比
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">成功</div>
+                <div class="stat-number" id="successfulSyncs">-</div>
+                <div class="stat-change positive">
+                    ↗ +5% 前週比
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">失敗</div>
+                <div class="stat-number" id="failedSyncs">-</div>
+                <div class="stat-change negative">
+                    ↘ -3% 前週比
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">スキップ</div>
+                <div class="stat-number" id="skippedSyncs">-</div>
+                <div class="stat-change positive">
+                    ↗ +1% 前週比
+                </div>
+            </div>
+        </div>
+
+        <!-- API Tests Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">API接続テスト</h2>
+                <button class="button button-ghost" onclick="refreshStats()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 20 1 14 7 14"></polyline>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                    </svg>
+                    更新
+                </button>
+            </div>
+            <div class="card-content">
+                <div class="button-group">
+                    <button class="button button-secondary" onclick="testInstagram()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                        Instagram接続テスト
+                    </button>
+                    <button class="button button-secondary" onclick="testGBP()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        GBP接続テスト
+                    </button>
+                    <button class="button button-secondary" onclick="loadLogs()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                        ログ更新
+                    </button>
+                </div>
+                <div id="testResults"></div>
+            </div>
+        </div>
+
+        <!-- Logs Section -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">同期ログ</h2>
+                <div>
+                    <select id="pageSize" onchange="changePageSize()" class="button button-secondary" style="border: 1px solid var(--neutral-200); padding: 6px 12px;">
+                        <option value="10">10件表示</option>
+                        <option value="25" selected>25件表示</option>
+                        <option value="50">50件表示</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="logsContainer">
+                <div class="loading">ログを読み込み中...</div>
+            </div>
+            
+            <div class="pagination" id="pagination" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let pageSize = 25;
+        let totalPages = 1;
+
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshStats();
+            loadLogs();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(() => {
+                refreshStats();
+                if (currentPage === 1) {
+                    loadLogs();
+                }
+            }, 30000);
+        });
+
+        // Refresh statistics
+        async function refreshStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                
+                if (data.success && data.data.sync) {
+                    const stats = data.data.sync;
+                    document.getElementById('totalSyncs').textContent = stats.total || 0;
+                    document.getElementById('successfulSyncs').textContent = stats.successful || 0;
+                    document.getElementById('failedSyncs').textContent = stats.failed || 0;
+                    document.getElementById('skippedSyncs').textContent = stats.skipped || 0;
+                }
+            } catch (error) {
+                console.error('Failed to refresh stats:', error);
+            }
+        }
+
+        // Load logs
+        async function loadLogs() {
+            const container = document.getElementById('logsContainer');
+            container.innerHTML = '<div class="loading">Loading logs...</div>';
+
+            try {
+                const response = await fetch(`/api/logs?page=${currentPage}&limit=${pageSize}`);
+                const data = await response.json();
+
+                if (data.success && data.data) {
+                    const logs = data.data.logs;
+                    const pagination = data.data.pagination;
+                    
+                    totalPages = pagination.totalPages;
+                    
+                    if (logs.length === 0) {
+                        container.innerHTML = '<div class="loading">No sync logs found</div>';
+                        document.getElementById('pagination').style.display = 'none';
+                        return;
+                    }
+
+                    // Build table
+                    let tableHTML = `
+                        <div class="table-container">
+                            <table class="logs-table">
+                                <thead>
+                                    <tr>
+                                        <th>ステータス</th>
+                                        <th>日時</th>
+                                        <th>Instagram投稿</th>
+                                        <th>キャプション</th>
+                                        <th>GBP投稿</th>
+                                        <th>処理時間</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    logs.forEach(log => {
+                        const statusClass = `status-${log.status}`;
+                        let statusText = '不明';
+                        if (log.status === 'success') statusText = '成功';
+                        else if (log.status === 'failed') statusText = '失敗';
+                        else if (log.status === 'skipped') statusText = 'スキップ';
+                        
+                        const timestamp = new Date(log.timestamp).toLocaleString('ja-JP');
+                        const caption = log.instagramCaption ? 
+                            (log.instagramCaption.length > 50 ? 
+                                log.instagramCaption.substring(0, 50) + '...' : 
+                                log.instagramCaption) : 
+                            '-';
+                        const gbpPost = log.gbpPostId ? log.gbpPostId.split('/').pop() : '-';
+                        
+                        tableHTML += `
+                            <tr>
+                                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                                <td class="timestamp">${timestamp}</td>
+                                <td><a href="https://instagram.com/p/${log.instagramPostId}" target="_blank" style="color: var(--primary-500); text-decoration: none;">${log.instagramPostId}</a></td>
+                                <td class="caption-text" title="${log.instagramCaption || ''}">${caption}</td>
+                                <td style="color: var(--neutral-600);">${gbpPost}</td>
+                                <td style="color: var(--neutral-500); font-family: 'JetBrains Mono', Monaco, monospace;">${log.syncDuration}ms</td>
+                            </tr>
+                        `;
+                    });
+
+                    tableHTML += '</tbody></table></div>';
+                    container.innerHTML = tableHTML;
+                    
+                    // Update pagination
+                    updatePagination(pagination);
+                } else {
+                    container.innerHTML = '<div class="error">Failed to load logs: ' + (data.message || 'Unknown error') + '</div>';
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="error">Failed to load logs: ' + error.message + '</div>';
+            }
+        }
+
+        // Update pagination
+        function updatePagination(pagination) {
+            const paginationDiv = document.getElementById('pagination');
+            
+            if (pagination.totalPages <= 1) {
+                paginationDiv.style.display = 'none';
+                return;
+            }
+            
+            paginationDiv.style.display = 'flex';
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            if (currentPage > 1) {
+                paginationHTML += `<button onclick="changePage(${currentPage - 1})">前へ</button>`;
+            }
+            
+            // Page numbers
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(pagination.totalPages, currentPage + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const activeClass = i === currentPage ? 'active' : '';
+                paginationHTML += `<button class="${activeClass}" onclick="changePage(${i})">${i}</button>`;
+            }
+            
+            // Next button
+            if (currentPage < pagination.totalPages) {
+                paginationHTML += `<button onclick="changePage(${currentPage + 1})">次へ</button>`;
+            }
+            
+            paginationDiv.innerHTML = paginationHTML;
+        }
+
+        // Change page
+        function changePage(page) {
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                loadLogs();
+            }
+        }
+
+        // Change page size
+        function changePageSize() {
+            const select = document.getElementById('pageSize');
+            pageSize = parseInt(select.value);
+            currentPage = 1;
+            loadLogs();
+        }
+
+        // Test Instagram connection
+        async function testInstagram() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = '<div class="loading">Instagram 接続をテスト中...</div>';
+
+            try {
+                const response = await fetch('/api/test/instagram', { method: 'POST' });
+                const data = await response.json();
+
+                if (data.success) {
+                    resultsDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Instagram 接続成功<br>
+                            ビジネスアカウント: ${data.data?.businessAccountId}<br>
+                            利用可能投稿数: ${data.data?.postsCount}
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = `<div class="error">❌ Instagram 接続失敗: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Instagram テスト失敗: ${error.message}</div>`;
+            }
+        }
+
+        // Test GBP connection
+        async function testGBP() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = '<div class="loading">Google Business Profile 接続をテスト中...</div>';
+
+            try {
+                const response = await fetch('/api/test/gbp', { method: 'POST' });
+                const data = await response.json();
+
+                if (data.success) {
+                    resultsDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Google Business Profile 接続成功<br>
+                            アカウント: ${data.data?.accountId}<br>
+                            ロケーション: ${data.data?.locationId}
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = `<div class="error">❌ GBP 接続失敗: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ GBP テスト失敗: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

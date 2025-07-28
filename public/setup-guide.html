@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEO Sync セットアップガイド</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-50: #EFF6FF;
+            --primary-100: #DBEAFE;
+            --primary-500: #0F62FE;
+            --primary-600: #0D52D1;
+            --primary-700: #0A42A4;
+            
+            --neutral-50: #F8FAFC;
+            --neutral-100: #F1F5F9;
+            --neutral-200: #E2E8F0;
+            --neutral-300: #CBD5E1;
+            --neutral-400: #94A3B8;
+            --neutral-500: #64748B;
+            --neutral-600: #475569;
+            --neutral-700: #334155;
+            --neutral-800: #1E293B;
+            --neutral-900: #0F172A;
+            
+            --success: #22C55E;
+            --warning: #F97316;
+            --error: #EF4444;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--neutral-50);
+            color: var(--neutral-800);
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 1rem 0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+            letter-spacing: -0.025em;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--neutral-200);
+            background: white;
+            color: var(--neutral-600);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-button:hover {
+            background: var(--neutral-50);
+            border-color: var(--neutral-300);
+        }
+
+        .nav-button.primary {
+            background: var(--primary-500);
+            color: white;
+            border-color: var(--primary-500);
+        }
+
+        .nav-button.primary:hover {
+            background: var(--primary-600);
+            border-color: var(--primary-600);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            min-height: calc(100vh - 120px);
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-header {
+            padding: 2rem 2rem 1rem;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--neutral-900);
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--neutral-600);
+            font-size: 1rem;
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .step {
+            margin-bottom: 2rem;
+            border: 1px solid var(--neutral-200);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .step:hover {
+            border-color: var(--neutral-300);
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .step-header {
+            background: var(--neutral-50);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--neutral-200);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .step-header:hover {
+            background: var(--neutral-100);
+        }
+
+        .step-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .step-number {
+            background: var(--primary-500);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .step-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+        }
+
+        .step-arrow {
+            font-size: 1.25rem;
+            color: var(--neutral-500);
+            transition: all 0.2s;
+        }
+
+        .step-content {
+            padding: 1.5rem;
+            display: none;
+        }
+
+        .step.active .step-content {
+            display: block;
+        }
+
+        .step.active .step-arrow {
+            transform: rotate(180deg);
+            color: var(--primary-500);
+        }
+
+        .step.active .step-arrow svg {
+            transform: rotate(180deg);
+        }
+
+        .api-section {
+            background: var(--neutral-50);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .api-section h4 {
+            color: var(--primary-600);
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background: var(--neutral-900);
+            color: #E2E8F0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: 'JetBrains Mono', Monaco, 'Courier New', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            border: 1px solid var(--neutral-800);
+        }
+
+        .warning {
+            background: #FEF3C7;
+            border: 1px solid #FDE68A;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--warning);
+            color: #92400E;
+        }
+
+        .success {
+            background: #DCFCE7;
+            border: 1px solid #BBF7D0;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--success);
+            color: #166534;
+        }
+
+        .input-group {
+            margin: 1rem 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--neutral-700);
+            font-size: 0.875rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--neutral-300);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(15, 98, 254, 0.1);
+        }
+
+        .input-group input::placeholder {
+            color: var(--neutral-400);
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            margin: 0.5rem 0.25rem;
+        }
+
+        .button-primary {
+            background: var(--primary-500);
+            color: white;
+        }
+
+        .button-primary:hover {
+            background: var(--primary-600);
+        }
+
+        .button-secondary {
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+            border: 1px solid var(--neutral-200);
+        }
+
+        .button-secondary:hover {
+            background: var(--neutral-200);
+        }
+
+        /* Chatbot */
+        .chatbot {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, var(--success) 0%, #10B981 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .chatbot-header h3 {
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .chatbot-header p {
+            opacity: 0.9;
+            font-size: 0.875rem;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 85%;
+            word-wrap: break-word;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .message.bot {
+            background: var(--neutral-100);
+            color: var(--neutral-800);
+            align-self: flex-start;
+        }
+
+        .message.user {
+            background: var(--primary-500);
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .chatbot-input {
+            padding: 1.5rem;
+            border-top: 1px solid var(--neutral-200);
+        }
+
+        .chatbot-input-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--neutral-300);
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .chatbot-input input:focus {
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        .chatbot-input button {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .chatbot-input button:hover {
+            background: #059669;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+            color: var(--neutral-500);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .chatbot {
+                height: 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header-content {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .nav-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .chatbot {
+                height: 400px;
+            }
+
+            .page-header {
+                padding: 1.5rem 1.5rem 1rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">M</div>
+                <h1>MEO Sync</h1>
+            </div>
+            <div class="nav-actions">
+                <a href="/" class="nav-button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                        <polyline points="9,11 12,14 22,4"></polyline>
+                    </svg>
+                    ダッシュボード
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- メインコンテンツ -->
+        <div class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">🚀 セットアップガイド</h1>
+                <p class="page-subtitle">Instagram から Google Business Profile への自動同期を開始しましょう</p>
+            </div>
+            
+            <div class="content">
+                <!-- ステップ1: Instagram API -->
+                <div class="step active">
+                    <div class="step-header" onclick="toggleStep(this)">
+                        <div class="step-left">
+                            <div class="step-number">1</div>
+                            <div class="step-title">Instagram Graph API の設定</div>
+                        </div>
+                        <div class="step-arrow">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="step-content">
+                        <div class="api-section">
+                            <h4>📱 必要な情報</h4>
+                            <ul style="margin-left: 20px; line-height: 1.8;">
+                                <li>Instagram App ID</li>
+                                <li>Instagram App Secret</li>
+                                <li>Long-lived Access Token</li>
+                                <li>Business Account ID</li>
+                                <li>Webhook Verify Token</li>
+                            </ul>
+                        </div>
+
+                        <div class="warning">
+                            <strong>⚠️ 重要:</strong> Instagram アカウントが「ビジネスアカウント」で、Facebook ページとリンクされている必要があります。
+                        </div>
+
+                        <h4>🔧 設定手順</h4>
+                        <ol style="line-height: 2; margin-left: 20px;">
+                            <li><a href="https://developers.facebook.com/" target="_blank">Meta for Developers</a> にアクセス</li>
+                            <li>「アプリを作成」→「ビジネス」タイプを選択</li>
+                            <li>「Instagram Graph API」を製品に追加</li>
+                            <li>Graph API Explorer でアクセストークンを取得</li>
+                            <li>Short-lived Token を Long-lived Token に変換</li>
+                        </ol>
+
+                        <div class="code-block">
+# Long-lived Token への変換
+curl -X GET "https://graph.facebook.com/v18.0/oauth/access_token" \
+  -d "grant_type=fb_exchange_token" \
+  -d "client_id={YOUR_APP_ID}" \
+  -d "client_secret={YOUR_APP_SECRET}" \
+  -d "fb_exchange_token={SHORT_LIVED_TOKEN}"
+                        </div>
+
+                        <div class="input-group">
+                            <label>Instagram App ID</label>
+                            <input type="text" id="ig-app-id" placeholder="例: 1234567890123456">
+                        </div>
+                        <div class="input-group">
+                            <label>Instagram App Secret</label>
+                            <input type="password" id="ig-app-secret" placeholder="アプリシークレットを入力">
+                        </div>
+                        <div class="input-group">
+                            <label>Long-lived Access Token</label>
+                            <input type="password" id="ig-access-token" placeholder="長期有効なアクセストークン">
+                        </div>
+                        <div class="input-group">
+                            <label>Business Account ID</label>
+                            <input type="text" id="ig-business-id" placeholder="Instagram ビジネスアカウント ID">
+                        </div>
+                        <div class="input-group">
+                            <label>Webhook Verify Token</label>
+                            <input type="text" id="ig-webhook-token" placeholder="任意の文字列（例: my_webhook_token）">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ステップ2: Google Business Profile API -->
+                <div class="step">
+                    <div class="step-header" onclick="toggleStep(this)">
+                        <div class="step-left">
+                            <div class="step-number">2</div>
+                            <div class="step-title">Google Business Profile API の設定</div>
+                        </div>
+                        <div class="step-arrow">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="step-content">
+                        <div class="api-section">
+                            <h4>🏪 必要な情報</h4>
+                            <ul style="margin-left: 20px; line-height: 1.8;">
+                                <li>OAuth2 Client ID</li>
+                                <li>OAuth2 Client Secret</li>
+                                <li>Refresh Token</li>
+                                <li>Account ID</li>
+                                <li>Location ID</li>
+                            </ul>
+                        </div>
+
+                        <div class="warning">
+                            <strong>⚠️ 重要:</strong> Google Business Profile の管理者権限が必要で、ビジネス情報が確認済みである必要があります。
+                        </div>
+
+                        <h4>🔧 設定手順</h4>
+                        <ol style="line-height: 2; margin-left: 20px;">
+                            <li><a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> でプロジェクト作成</li>
+                            <li>「My Business Business Information API」を有効化</li>
+                            <li>「OAuth2 クライアント ID」を作成</li>
+                            <li>認証フローでリフレッシュトークンを取得</li>
+                            <li>Account ID と Location ID を取得</li>
+                        </ol>
+
+                        <div class="input-group">
+                            <label>GBP Client ID</label>
+                            <input type="text" id="gbp-client-id" placeholder="Google OAuth2 クライアント ID">
+                        </div>
+                        <div class="input-group">
+                            <label>GBP Client Secret</label>
+                            <input type="password" id="gbp-client-secret" placeholder="Google OAuth2 クライアントシークレット">
+                        </div>
+                        <div class="input-group">
+                            <label>GBP Refresh Token</label>
+                            <input type="password" id="gbp-refresh-token" placeholder="OAuth2 リフレッシュトークン">
+                        </div>
+                        <div class="input-group">
+                            <label>GBP Account ID</label>
+                            <input type="text" id="gbp-account-id" placeholder="Google Business Profile アカウント ID">
+                        </div>
+                        <div class="input-group">
+                            <label>GBP Location ID</label>
+                            <input type="text" id="gbp-location-id" placeholder="Google Business Profile ロケーション ID">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ステップ3: 基本設定 -->
+                <div class="step">
+                    <div class="step-header" onclick="toggleStep(this)">
+                        <div class="step-left">
+                            <div class="step-number">3</div>
+                            <div class="step-title">基本設定</div>
+                        </div>
+                        <div class="step-arrow">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="step-content">
+                        <div class="input-group">
+                            <label>対象ハッシュタグ</label>
+                            <input type="text" id="target-hashtag" value="#MEO" placeholder="例: #MEO">
+                        </div>
+                        <div class="input-group">
+                            <label>ポーリング間隔（分）</label>
+                            <input type="number" id="poll-interval" value="5" min="1" max="60">
+                        </div>
+                        <div class="input-group">
+                            <label>1回あたりの最大投稿チェック数</label>
+                            <input type="number" id="max-posts" value="10" min="1" max="50">
+                        </div>
+                        <div class="input-group">
+                            <label>サーバーポート</label>
+                            <input type="number" id="server-port" value="3000" min="1000" max="9999">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ステップ4: .env ファイル生成 -->
+                <div class="step">
+                    <div class="step-header" onclick="toggleStep(this)">
+                        <div class="step-left">
+                            <div class="step-number">4</div>
+                            <div class="step-title">.env ファイル生成・ダウンロード</div>
+                        </div>
+                        <div class="step-arrow">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="step-content">
+                        <p style="margin-bottom: 20px;">上記で入力した情報から .env ファイルを自動生成します。</p>
+                        
+                        <button class="button button-primary" onclick="generateEnvFile()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10,9 9,9 8,9"></polyline>
+                            </svg>
+                            .env ファイルを生成
+                        </button>
+                        <button class="button button-secondary" onclick="downloadEnvFile()" id="download-btn" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7,10 12,15 17,10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            ダウンロード
+                        </button>
+                        
+                        <div id="env-preview" style="margin-top: 20px; display: none;">
+                            <h4>生成された .env ファイル:</h4>
+                            <div class="code-block" id="env-content"></div>
+                        </div>
+
+                        <div class="success" style="margin-top: 20px; display: none;" id="success-message">
+                            <strong>✅ 完了!</strong> .env ファイルをプロジェクトのルートディレクトリに配置して、アプリケーションを起動してください。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- チャットボット -->
+        <div class="chatbot">
+            <div class="chatbot-header">
+                <h3>🤖 セットアップサポート</h3>
+                <p>設定でお困りですか？</p>
+            </div>
+            <div class="chatbot-messages" id="chat-messages">
+                <div class="message bot">
+                    こんにちは！MEO Sync のセットアップをお手伝いします。<br>
+                    Instagram API や Google Business Profile API の設定でご不明な点があれば、お気軽にお聞きください。
+                </div>
+            </div>
+            <div class="loading" id="chat-loading">
+                <div>🤖 回答を生成中...</div>
+            </div>
+            <div class="chatbot-input">
+                <div class="chatbot-input-group">
+                    <input type="text" id="chat-input" placeholder="質問を入力してください..." onkeypress="handleChatKeypress(event)">
+                    <button onclick="sendMessage()">送信</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let generatedEnvContent = '';
+
+        function toggleStep(header) {
+            const step = header.parentElement;
+            step.classList.toggle('active');
+        }
+
+        function generateEnvFile() {
+            const data = {
+                igAppId: document.getElementById('ig-app-id').value,
+                igAppSecret: document.getElementById('ig-app-secret').value,
+                igAccessToken: document.getElementById('ig-access-token').value,
+                igBusinessId: document.getElementById('ig-business-id').value,
+                igWebhookToken: document.getElementById('ig-webhook-token').value,
+                gbpClientId: document.getElementById('gbp-client-id').value,
+                gbpClientSecret: document.getElementById('gbp-client-secret').value,
+                gbpRefreshToken: document.getElementById('gbp-refresh-token').value,
+                gbpAccountId: document.getElementById('gbp-account-id').value,
+                gbpLocationId: document.getElementById('gbp-location-id').value,
+                targetHashtag: document.getElementById('target-hashtag').value,
+                pollInterval: document.getElementById('poll-interval').value,
+                maxPosts: document.getElementById('max-posts').value,
+                serverPort: document.getElementById('server-port').value
+            };
+
+            // バリデーション
+            const required = [
+                'igAppId', 'igAppSecret', 'igAccessToken', 'igBusinessId',
+                'gbpClientId', 'gbpClientSecret', 'gbpRefreshToken', 'gbpAccountId', 'gbpLocationId'
+            ];
+            
+            const missing = required.filter(key => !data[key]);
+            if (missing.length > 0) {
+                alert('必須項目が入力されていません: ' + missing.join(', '));
+                return;
+            }
+
+            // .env ファイル内容生成
+            generatedEnvContent = `# Instagram Graph API Configuration
+INSTAGRAM_APP_ID=${data.igAppId}
+INSTAGRAM_APP_SECRET=${data.igAppSecret}
+INSTAGRAM_ACCESS_TOKEN=${data.igAccessToken}
+INSTAGRAM_BUSINESS_ACCOUNT_ID=${data.igBusinessId}
+INSTAGRAM_WEBHOOK_VERIFY_TOKEN=${data.igWebhookToken || 'webhook_verify_token'}
+
+# Google Business Profile API Configuration
+GBP_CLIENT_ID=${data.gbpClientId}
+GBP_CLIENT_SECRET=${data.gbpClientSecret}
+GBP_REFRESH_TOKEN=${data.gbpRefreshToken}
+GBP_ACCOUNT_ID=${data.gbpAccountId}
+GBP_LOCATION_ID=${data.gbpLocationId}
+
+# Synchronization Configuration
+TARGET_HASHTAG=${data.targetHashtag}
+POLL_INTERVAL_MINUTES=${data.pollInterval}
+MAX_POSTS_PER_POLL=${data.maxPosts}
+
+# Server Configuration
+PORT=${data.serverPort}
+WEBHOOK_PATH=/webhook/instagram
+API_BASE_PATH=/api
+
+# Logging Configuration
+LOG_LEVEL=info
+LOG_FILE_PATH=./logs/meo-sync.log
+LOG_MAX_FILES=7
+LOG_MAX_SIZE=10m
+
+# Environment
+NODE_ENV=production`;
+
+            document.getElementById('env-content').textContent = generatedEnvContent;
+            document.getElementById('env-preview').style.display = 'block';
+            document.getElementById('download-btn').disabled = false;
+            document.getElementById('success-message').style.display = 'block';
+        }
+
+        function downloadEnvFile() {
+            if (!generatedEnvContent) {
+                alert('まず .env ファイルを生成してください。');
+                return;
+            }
+
+            const blob = new Blob([generatedEnvContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '.env';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function handleChatKeypress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            // ユーザーメッセージを表示
+            addMessage(message, 'user');
+            input.value = '';
+
+            // ローディング表示
+            document.getElementById('chat-loading').style.display = 'block';
+
+            try {
+                // OpenAI API に送信
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer YOUR_OPENAI_API_KEY_HERE'
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: `あなたは MEO Sync のセットアップサポート担当です。このアプリケーションを使う上で悩んでいる人の補助をしてください。Instagram Graph API と Google Business Profile API の設定について、わかりやすく日本語で説明し、困っている人をサポートしてください。
+
+主な対応内容:
+1. Instagram Business アカウントの設定方法とトラブル解決
+2. Meta for Developers でのアプリ作成の詳細手順
+3. Access Token の取得方法と期限切れ対応
+4. Google Cloud Console の設定と権限の問題
+5. OAuth2 の設定とリフレッシュトークンの取得
+6. API キーの取得方法と正しい設定方法
+7. .env ファイルの作成と配置方法
+8. よくあるエラーとトラブルシューティング
+9. API制限やクォータの説明
+10. セキュリティのベストプラクティス
+
+ユーザーが困っている時は共感を示し、段階的に問題を解決できるよう丁寧にサポートしてください。技術的な内容も初心者にわかりやすく、具体的な手順を示して説明してください。`
+                            },
+                            {
+                                role: 'user',
+                                content: message
+                            }
+                        ],
+                        max_tokens: 500,
+                        temperature: 0.7
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.choices && data.choices[0]) {
+                    addMessage(data.choices[0].message.content, 'bot');
+                } else {
+                    addMessage('申し訳ございません。現在チャットボットが利用できません。しばらく経ってから再度お試しください。', 'bot');
+                }
+            } catch (error) {
+                console.error('Chat error:', error);
+                addMessage('申し訳ございません。エラーが発生しました。直接サポートまでお問い合わせください。', 'bot');
+            } finally {
+                document.getElementById('chat-loading').style.display = 'none';
+            }
+        }
+
+        function addMessage(content, type) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = content.replace(/\n/g, '<br>');
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 最初のステップを開く
+            const firstStep = document.querySelector('.step');
+            if (firstStep) {
+                firstStep.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
