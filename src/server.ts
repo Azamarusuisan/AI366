@@ -387,6 +387,15 @@ async function startServer(): Promise<void> {
       });
     });
 
+    // Handle port errors
+    server.on('error', (err: any) => {
+      if (err.code === 'EADDRINUSE') {
+        log.error(`Port ${appConfig.server.port} is already in use`);
+        process.exit(1);
+      }
+      throw err;
+    });
+
     // Graceful shutdown
     process.on('SIGINT', () => {
       log.info('Received SIGINT, shutting down gracefully');
@@ -420,12 +429,7 @@ export { app, startServer, processSinglePost };
 // Export default for Vercel
 export default app;
 
-// Start server if called directly (not in Vercel)
-if (require.main === module && !process.env.VERCEL) {
-  startServer();
-}
-
-// For Render: Start server automatically
-if (process.env.RENDER) {
+// Start server if called directly
+if (require.main === module) {
   startServer();
 }
