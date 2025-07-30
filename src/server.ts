@@ -11,29 +11,44 @@ import {
   ApiResponse,
   LogsApiResponse,
 } from './types';
+import { authMiddleware, login, LoginRequest } from './auth';
+import { applySecurityMiddleware, authLimiter, webhookLimiter, sanitizeLogData } from './security';
+import { 
+  validateLogin, 
+  validateLogsQuery, 
+  validateWebhook, 
+  validateWebhookSignature,
+  sanitizeHtml 
+} from './validators';
 
 // Initialize Express app
 const app = express();
 
-// Middleware
+// Apply security middleware first
+applySecurityMiddleware(app);
+
+// Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// Logging middleware
+// Static files - only serve public files that don't contain sensitive data
+app.use('/dashboard', express.static(path.join(__dirname, '..', 'public')));
+app.use('/setup', express.static(path.join(__dirname, '..', 'public')));
+
+// Logging middleware with sanitization
 app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
   
   res.on('finish', () => {
     const duration = Date.now() - start;
-    log.info('HTTP Request', {
+    log.info('HTTP Request', sanitizeLogData({
       method: req.method,
       url: req.url,
       status: res.statusCode,
       duration,
       userAgent: req.get('User-Agent'),
       ip: req.ip,
-    });
+    }));
   });
   
   next();
@@ -55,7 +70,34 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   } as ApiResponse);
 });
 
-// Health check endpoint
+// Authentication endpoints
+app.post('/api/auth/login', authLimiter, validateLogin, async (req: Request, res: Response) => {
+  try {
+    const { username, password } = req.body as LoginRequest;
+    const result = await login(username, password);
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        data: { token: result.token },
+        message: 'Login successful'
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        message: result.message
+      });
+    }
+  } catch (error) {
+    log.error('Login error', sanitizeLogData({ error }));
+    res.status(500).json({
+      success: false,
+      message: 'Authentication failed'
+    });
+  }
+});
+
+// Health check endpoint (public)
 app.get('/health', (req: Request, res: Response) => {
   res.json({
     success: true,
@@ -66,6 +108,16 @@ app.get('/health', (req: Request, res: Response) => {
       environment: appConfig.env,
     },
   } as ApiResponse);
+});
+
+// Dashboard route (public for demo)
+app.get('/', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html'));
+});
+
+// Setup guide route (public)
+app.get('/setup', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'setup-guide.html'));
 });
 
 // Instagram webhook verification (GET)
@@ -91,8 +143,8 @@ app.get(appConfig.server.webhookPath, (req: Request, res: Response) => {
   }
 });
 
-// Instagram webhook handler (POST)
-app.post(appConfig.server.webhookPath, async (req: Request, res: Response) => {
+// Instagram webhook handler (POST) - with rate limiting and validation
+app.post(appConfig.server.webhookPath, webhookLimiter, validateWebhookSignature, validateWebhook, async (req: Request, res: Response) => {
   try {
     const signature = req.get('X-Hub-Signature-256');
     const payload = JSON.stringify(req.body);
@@ -143,8 +195,8 @@ app.post(appConfig.server.webhookPath, async (req: Request, res: Response) => {
   }
 });
 
-// API: Get sync logs
-app.get(`${appConfig.server.apiBasePath}/logs`, async (req: Request, res: Response) => {
+// API: Get sync logs (protected)
+app.get(`${appConfig.server.apiBasePath}/logs`, authMiddleware, validateLogsQuery, async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
@@ -176,8 +228,8 @@ app.get(`${appConfig.server.apiBasePath}/logs`, async (req: Request, res: Respon
   }
 });
 
-// API: Get sync statistics
-app.get(`${appConfig.server.apiBasePath}/stats`, async (req: Request, res: Response) => {
+// API: Get sync statistics (protected)
+app.get(`${appConfig.server.apiBasePath}/stats`, authMiddleware, async (req: Request, res: Response) => {
   try {
     const stats = await syncLogger.getSyncLogStats();
     const filterStats = postFilter.getFilterStats();
@@ -207,8 +259,8 @@ app.get(`${appConfig.server.apiBasePath}/stats`, async (req: Request, res: Respo
   }
 });
 
-// API: Test Instagram connection
-app.post(`${appConfig.server.apiBasePath}/test/instagram`, async (req: Request, res: Response) => {
+// API: Test Instagram connection (protected)
+app.post(`${appConfig.server.apiBasePath}/test/instagram`, authMiddleware, async (req: Request, res: Response) => {
   try {
     const result = await instagramAPI.testConnection();
     res.json({
@@ -227,8 +279,8 @@ app.post(`${appConfig.server.apiBasePath}/test/instagram`, async (req: Request, 
   }
 });
 
-// API: Test GBP connection
-app.post(`${appConfig.server.apiBasePath}/test/gbp`, async (req: Request, res: Response) => {
+// API: Test GBP connection (protected)
+app.post(`${appConfig.server.apiBasePath}/test/gbp`, authMiddleware, async (req: Request, res: Response) => {
   try {
     const result = await gbpAPI.testConnection();
     res.json({
