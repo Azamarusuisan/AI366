@@ -2,28 +2,19 @@ services:
   - type: web
     name: meo-sync
     runtime: node
-    buildCommand: npm install && npm run build
+    plan: free
+    buildCommand: npm ci && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        fromGroup: meo-sync-env
-      - key: INSTAGRAM_APP_ID
-        fromGroup: meo-sync-env
-      - key: INSTAGRAM_APP_SECRET
-        fromGroup: meo-sync-env
-      - key: INSTAGRAM_ACCESS_TOKEN
-        fromGroup: meo-sync-env
-      - key: INSTAGRAM_BUSINESS_ACCOUNT_ID
-        fromGroup: meo-sync-env
-      - key: GBP_CLIENT_ID
-        fromGroup: meo-sync-env
-      - key: GBP_CLIENT_SECRET
-        fromGroup: meo-sync-env
-      - key: GBP_REFRESH_TOKEN
-        fromGroup: meo-sync-env
-      - key: GBP_ACCOUNT_ID
-        fromGroup: meo-sync-env
-      - key: GBP_LOCATION_ID
-        fromGroup: meo-sync-env
+      - key: DEMO_MODE
+        value: true
+      - key: JWT_SECRET
+        value: secure_jwt_secret_for_production_at_least_32_characters
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        value: SecurePassword123!
+      - key: ALLOWED_ORIGINS
+        value: https://meo-sync.onrender.com
